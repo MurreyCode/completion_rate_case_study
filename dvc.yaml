@@ -1,0 +1,65 @@
+stages:
+  prepare_data:
+    cmd: python pipeline/src/prepare_data.py
+    deps:
+    - pipeline/data/completion_rate.csv
+    - pipeline/src/prepare_data.py
+    params:
+    - pipeline/src/params.py:
+      - Params.RELEVANT_FEATS_IDX
+      - Params.RELEVANT_FEATS_NAMES
+      - Params.SEED
+      - Params.TEST_SIZE
+      - Params.VALIDATION_SET_SIZE
+    outs:
+    - pipeline/data/test_features.csv
+    - pipeline/data/test_labels.csv
+    - pipeline/data/train_features.csv
+    - pipeline/data/train_labels.csv
+    - pipeline/data/validation.csv
+  search_n_train:
+    cmd: python pipeline/src/search_n_train.py
+    deps:
+    - pipeline/data/train_features.csv
+    - pipeline/data/train_labels.csv
+    - pipeline/src/search_n_train.py
+    params:
+    - pipeline/src/params.py:
+      - Params.ALGO_NAME
+      - Params.ALGO_ORIGIN
+      - Params.CV
+      - Params.METRIC_NAME
+      - Params.METRIC_ORIGIN
+      - Params.PARAMS_GRID
+      - Params.SCALER_NAME
+      - Params.SCALER_ORIGIN
+      - Params.SEED
+    outs:
+    - pipeline/model/model.p
+    - pipeline/model/train_params.json
+    metrics:
+    - pipeline/model/metrics.json
+  evaluate:
+    cmd: python pipeline/src/evaluate.py
+    deps:
+    - pipeline/data/test_features.csv
+    - pipeline/data/test_labels.csv
+    - pipeline/model/metrics.json
+    - pipeline/model/model.p
+    - pipeline/src/evaluate.py
+    params:
+    - pipeline/src/params.py:
+      - Params.METRIC_NAME
+      - Params.METRIC_ORIGIN
+    outs:
+    - pipeline/model/test_preds.csv
+  validate:
+    cmd: python pipeline/src/validate.py
+    deps:
+    - pipeline/data/validation.csv
+    - pipeline/model/metrics.json
+    - pipeline/model/model.p
+    - pipeline/src/validate.py
+    params:
+    - pipeline/src/params.py:
+      - Params.METRIC_NAME

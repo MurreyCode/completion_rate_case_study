@@ -1,0 +1,16 @@
+version: "3"
+
+services:
+    app:
+        container_name: app
+        image: app
+        build:
+            context: .
+            dockerfile: API.Dockerfile
+        volumes:
+            - .:/home/app
+        env_file:
+            - ./API.env
+        ports:
+            - "5000:5000"
+        command: bash -c "python run.py"

@@ -1,0 +1,1 @@
+{"model_id": "eff7b6b0-4b75-4c20-a1ac-d4b590d724ed", "train": {"mean_squared_error": 0.04820506142621721, "support": 825027}, "evaluate": {"mean_squared_error": 0.04809829752990591, "support": 206257}, "validate": {"model_size": 27750, "validation_set_size": 1500, "set_total_inference_time": 0.58, "mean_inference_time": 0.0, "max_inference_time": 0.0}}

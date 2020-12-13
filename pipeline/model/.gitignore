@@ -1,0 +1,6 @@
+/model.p
+/metrics.json
+/train_params.json
+/train_confusion_matrix.png
+/test_confusion_matrix.png
+/test_preds.csv
