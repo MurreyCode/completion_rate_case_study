@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+    runner:
+        container_name: runner
+        image: runner
+        build:
+            context: .
+            dockerfile: pipeline.Dockerfile
+        volumes:
+            - .:/home/runner
+        env_file:
+            - ./pipeline.env
+        command: bash -c "tail -f /dev/null"

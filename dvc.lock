@@ -1,0 +1,113 @@
+prepare_data:
+  cmd: python pipeline/src/prepare_data.py
+  deps:
+  - path: pipeline/data/completion_rate.csv
+    md5: c20f528bcbd007a305b9f171eae934ef
+    size: 209951084
+  - path: pipeline/src/prepare_data.py
+    md5: 460b3a478d91158a192675cbfce54f42
+    size: 2234
+  params:
+    pipeline/src/params.py:
+      Params.RELEVANT_FEATS_IDX: '[32, 18, 5, 33, 37, 35, 39, 6, 29, 26]'
+      Params.RELEVANT_FEATS_NAMES: "['feat_33', 'feat_19', 'feat_06', 'feat_34', 'feat_38',\
+        \                             'feat_36', 'feat_40', 'feat_07', 'feat_30',\
+        \ 'feat_27']"
+      Params.SEED: 6
+      Params.TEST_SIZE: 0.2
+      Params.VALIDATION_SET_SIZE: 1500
+  outs:
+  - path: pipeline/data/test_features.csv
+    md5: 10df3661c3293dcc8527471ad1533f31
+    size: 10006769
+  - path: pipeline/data/test_labels.csv
+    md5: 9b18a2402806fc5af1f98051f4027859
+    size: 5371616
+  - path: pipeline/data/train_features.csv
+    md5: f8ccf60d93008f47bc827b6e14be3f12
+    size: 40026332
+  - path: pipeline/data/train_labels.csv
+    md5: 5f626be83e59baeac238d16659d3fe28
+    size: 21497839
+  - path: pipeline/data/validation.csv
+    md5: da3c7e190f4a7dc81927adfc38a6e5a1
+    size: 72901
+search_n_train:
+  cmd: python pipeline/src/search_n_train.py
+  deps:
+  - path: pipeline/data/train_features.csv
+    md5: f8ccf60d93008f47bc827b6e14be3f12
+    size: 40026332
+  - path: pipeline/data/train_labels.csv
+    md5: 5f626be83e59baeac238d16659d3fe28
+    size: 21497839
+  - path: pipeline/src/search_n_train.py
+    md5: 360cf0d8b37c4fac5a016d80c418961c
+    size: 3720
+  params:
+    pipeline/src/params.py:
+      Params.ALGO_NAME: GradientBoostingRegressor
+      Params.ALGO_ORIGIN: sklearn.ensemble
+      Params.CV: 5
+      Params.METRIC_NAME: mean_squared_error
+      Params.METRIC_ORIGIN: sklearn.metrics
+      Params.PARAMS_GRID: "{\n        'model__n_estimators': [25],\n        'model__learning_rate':\
+        \ [0.1],\n        'model__max_depth': [2],\n        'model__random_state':\
+        \ [Params.SEED]\n    }"
+      Params.SCALER_NAME: MinMaxScaler
+      Params.SCALER_ORIGIN: sklearn.preprocessing
+      Params.SEED: 6
+  outs:
+  - path: pipeline/model/metrics.json
+    md5: 915d0271d8101197475c9f66ddd0c6c3
+    size: 125
+  - path: pipeline/model/model.p
+    md5: c7f020f4a76b78b0b6608d53d3dc853a
+    size: 27750
+  - path: pipeline/model/train_params.json
+    md5: 5df0fccc45e41cd5e32d158b05cc6fe5
+    size: 588
+evaluate:
+  cmd: python pipeline/src/evaluate.py
+  deps:
+  - path: pipeline/data/test_features.csv
+    md5: 10df3661c3293dcc8527471ad1533f31
+    size: 10006769
+  - path: pipeline/data/test_labels.csv
+    md5: 9b18a2402806fc5af1f98051f4027859
+    size: 5371616
+  - path: pipeline/model/metrics.json
+    md5: f6d3931763602740bebba0135513a681
+    size: 201
+  - path: pipeline/model/model.p
+    md5: c7f020f4a76b78b0b6608d53d3dc853a
+    size: 27750
+  - path: pipeline/src/evaluate.py
+    md5: a55f23b078bec9c54eab762fce191bef
+    size: 1956
+  params:
+    pipeline/src/params.py:
+      Params.METRIC_NAME: mean_squared_error
+      Params.METRIC_ORIGIN: sklearn.metrics
+  outs:
+  - path: pipeline/model/test_preds.csv
+    md5: cb52f46f7648e1c8ec36f83786089dc6
+    size: 5156425
+validate:
+  cmd: python pipeline/src/validate.py
+  deps:
+  - path: pipeline/data/validation.csv
+    md5: da3c7e190f4a7dc81927adfc38a6e5a1
+    size: 72901
+  - path: pipeline/model/metrics.json
+    md5: 24e025fa87bf28946447e6955b69d5fd
+    size: 354
+  - path: pipeline/model/model.p
+    md5: c7f020f4a76b78b0b6608d53d3dc853a
+    size: 27750
+  - path: pipeline/src/validate.py
+    md5: 7670908d81e7ef9ec3b83a09e13946f3
+    size: 3558
+  params:
+    pipeline/src/params.py:
+      Params.METRIC_NAME: mean_squared_error
